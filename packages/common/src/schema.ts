@@ -15,5 +15,5 @@ export const signinSchema = z.object({
 
 export const createRoomSchema = z.object({
     slug: z.string("Room name is required").min(6, "Room name must be of al=tleast 6 character").max(50, "Room name cannot be of more than 50 characters"),
-    admin: z.custom<Admin>()
+    admin: z.custom<Admin>(() => true)
 })
