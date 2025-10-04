@@ -130,6 +130,12 @@ importers:
         specifier: workspace:*
         version: link:../typescript-config
 
+  packages/custom-types:
+    devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+
   packages/db:
     dependencies:
       '@prisma/client':
