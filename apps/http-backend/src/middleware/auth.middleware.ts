@@ -4,7 +4,7 @@ import jwt, { JwtPayload } from "jsonwebtoken"
 
 export const authMiddleware = async (req: Request, res: Response, next:NextFunction) => {
     try {
-        const token = req.headers['authorization']?.split('')[1];
+        const token = req.headers['authorization']?.split(' ')[1];
 
         if (!token) {
             res.status(403).json({
@@ -20,12 +20,12 @@ export const authMiddleware = async (req: Request, res: Response, next:NextFunct
             name: string; 
         } & JwtPayload;
 
-        // @ts-ignore
         req.user = decoded;
+        next();
     } catch (error) {
-        console.error("Some Error Occured :- ", error);
-        res.status(500).json({
-            message: "Some Error Occured",
+        console.error("Invalid or expired token :- ", error);
+        res.status(401).json({
+            message: "Invalid or expired token",
             success: false
         });
         return;

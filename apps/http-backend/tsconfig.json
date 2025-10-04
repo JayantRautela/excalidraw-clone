@@ -9,5 +9,5 @@
         ],
         "types": ["node", "express"]
     },
-    "include": ["types"]
+    "include": ["src","types"]
 }
