@@ -1,6 +1,6 @@
 import { prisma } from "@repo/db/client";
 import { Request, Response, RequestHandler } from "express";
-import { signinSchema, signupSchema } from "@repo/common/schema";
+import { createRoomSchema, signinSchema, signupSchema } from "@repo/common/schema";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "@repo/backend-common/config"
@@ -109,6 +109,61 @@ export const signin: RequestHandler = async (req: Request, res: Response) => {
         res.status(200).json({
             message: "User logged in",
             token: token,
+            success: true
+        });
+        return;
+    } catch (error) {
+        console.error("Some Error Occured :- ", error);
+        res.status(500).json({
+            message: "Some Error Occured",
+            success: false
+        });
+        return;
+    }
+}
+
+export const createRoom: RequestHandler = async (req: Request, res: Response) => {
+    const { success, data, error } = createRoomSchema.safeParse(req.body);
+
+    if (!success) {
+        res.status(400).json({
+            success: false,
+            message: "input validation error",
+            error: error.issues
+        });
+        return;
+    }
+    try {
+        const { slug, admin } = data;
+        const adminId = admin.id;
+
+        const user = await prisma.user.findUnique({
+            where: {
+                id: adminId
+            }
+        });
+
+        if (!user) {
+            res.status(404).json({
+                message: "User not found",
+                success: false
+            });
+            return;
+        }
+
+        await prisma.room.create({
+            data: {
+                slug: slug,
+                admin: {
+                    connect: { 
+                        id: user.id
+                    }
+                }
+            }
+        });
+
+        res.status(201).json({
+            message: "Room created successfully",
             success: true
         });
         return;
