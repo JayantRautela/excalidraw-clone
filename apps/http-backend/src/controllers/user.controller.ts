@@ -104,7 +104,7 @@ export const signin: RequestHandler = async (req: Request, res: Response) => {
             id: user.id,
             email: user.email,
             name: user.name
-        }, JWT_SECRET);
+        }, JWT_SECRET!);
 
         res.status(200).json({
             message: "User logged in",
@@ -134,29 +134,24 @@ export const createRoom: RequestHandler = async (req: Request, res: Response) =>
         return;
     }
     try {
-        const { slug, admin } = data;
-        const adminId = admin.id;
-
-        const user = await prisma.user.findUnique({
-            where: {
-                id: adminId
-            }
-        });
-
-        if (!user) {
+        const { slug } = data;
+        const admin = req.user;
+        
+        if (!admin) {
             res.status(404).json({
                 message: "User not found",
                 success: false
             });
             return;
         }
+        const adminId = admin.id;
 
         await prisma.room.create({
             data: {
                 slug: slug,
                 admin: {
                     connect: { 
-                        id: user.id
+                        id: adminId
                     }
                 }
             }
