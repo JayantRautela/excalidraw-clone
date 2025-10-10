@@ -24,7 +24,7 @@ export const getChats: RequestHandler = async (req: Request, res: Response) => {
         });
 
         res.status(200).json({
-            message: "Previous chats fetched",
+            message: chats.length === 0 ? "No previous chats" : "Previous chats fetched",
             success: true,
             chats: chats
         });
